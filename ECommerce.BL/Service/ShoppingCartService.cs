@@ -16,7 +16,7 @@ namespace ECommerce.BL.Service
 {
     public class ShoppingCartService :  IShoppingCartService
     {
-        private ICustomerService _customerService;
+        private readonly ICustomerService _customerService;
         private readonly IProductService _productService;
         private readonly IDbContext _context;
         private readonly ILogger<ShoppingCartService> _logger;

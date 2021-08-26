@@ -11,7 +11,7 @@ namespace ECommerce.BL.Service
 {
 	public class CustomerService : ICustomerService
 	{
-		private IDbContext _context;
+		private readonly IDbContext _context;
 		public CustomerService(IDbContext context) 
 		{
 			_context = context;
@@ -21,7 +21,7 @@ namespace ECommerce.BL.Service
 		{
 			await _context.Customers.AddAsync(customer);
 			if (savechanges)
-			 await _context.SaveChangesAsync();
+				await _context.SaveChangesAsync();
 			return customer;
 		}
 
