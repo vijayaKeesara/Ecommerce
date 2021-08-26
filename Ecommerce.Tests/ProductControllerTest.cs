@@ -157,7 +157,7 @@ namespace Ecommerce.Tests
 		[Xunit.Fact]
 		public async void Add_ProductQuantity_ShouldReturnSuccess()
 		{
-			_service.Setup(x => x.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Add")).Returns(System.Threading.Tasks.Task.FromResult<bool>(true));
+			_service.Setup(x => x.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Add",true)).Returns(System.Threading.Tasks.Task.FromResult<bool>(true));
 			// Act
 			var result = await _controller.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Add");
 
@@ -171,7 +171,7 @@ namespace Ecommerce.Tests
 		[Xunit.Fact]
 		public async void Remove_ProductQuantity_ShouldReturnSuccess()
 		{
-			_service.Setup(x => x.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Remove")).Returns(System.Threading.Tasks.Task.FromResult<bool>(true));
+			_service.Setup(x => x.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Remove",true)).Returns(System.Threading.Tasks.Task.FromResult<bool>(true));
 			// Act
 			var result = await _controller.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Remove");
 
@@ -184,7 +184,7 @@ namespace Ecommerce.Tests
 		[Xunit.Fact]
 		public async void Add_ProductQuantity_ShouldReturnFailure()
 		{
-			_service.Setup(x => x.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Add")).Returns(System.Threading.Tasks.Task.FromResult<bool>(false));
+			_service.Setup(x => x.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Add",true)).Returns(System.Threading.Tasks.Task.FromResult<bool>(false));
 			// Act
 			var result = await _controller.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Add");
 
@@ -197,7 +197,7 @@ namespace Ecommerce.Tests
 		[Xunit.Fact]
 		public async void Remove_ProductQuantity_ShouldReturnFailure()
 		{
-			_service.Setup(x => x.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Remove")).Returns(System.Threading.Tasks.Task.FromResult<bool>(false));
+			_service.Setup(x => x.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Remove",true)).Returns(System.Threading.Tasks.Task.FromResult<bool>(false));
 			// Act
 			var result = await _controller.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Remove");
 
@@ -211,7 +211,7 @@ namespace Ecommerce.Tests
 		[Xunit.Fact]
 		public async void CreateProduct_ShouldReturnSuccess()
 		{
-			_service.Setup(x => x.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Add")).Returns(System.Threading.Tasks.Task.FromResult<bool>(true));
+			_service.Setup(x => x.UpdateProductQuantityAsync(It.IsAny<int>(), It.IsAny<int>(), "Add",true)).Returns(System.Threading.Tasks.Task.FromResult<bool>(true));
 			// Act
 			ProductDto productDto = new ProductDto
 			{

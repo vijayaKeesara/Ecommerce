@@ -16,7 +16,6 @@ namespace Ecommerce.DA.Domain
 		public DbSet<Order> Orders { get; set; }
 		public DbSet<OrderProducts> OrderProducts { get; set; }
 		public DbSet<ShoppingCart> ShoppingCart { get; set; }
-
 		public DbSet<ShoppingCartItem> ShoppingCartItem { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

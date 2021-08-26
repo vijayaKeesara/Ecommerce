@@ -14,27 +14,41 @@ using System.Transactions;
 
 namespace ECommerce.BL.Service
 {
-    public class ShoppingCartService : EntityService<ShoppingCart>, IShoppingCartService
+    public class ShoppingCartService :  IShoppingCartService
     {
         private ICustomerService _customerService;
         private readonly IProductService _productService;
-        //private readonly IEventPublisher _eventPublisher;
-        private readonly ShopingDatabaseContext _context;
+        private readonly IDbContext _context;
         private readonly ILogger<ShoppingCartService> _logger;
         private readonly IMapper _mapper;
 
         public ShoppingCartService(ILogger<ShoppingCartService> logger, IMapper mapper,ICustomerService customerService, IProductService productService,
-            ShopingDatabaseContext context) : base(context)
+            IDbContext context) 
         {
             this._customerService = customerService;
             _productService = productService;
-            //_eventPublisher = eventPublisher;
             _context = context;
             _logger = logger;
             _mapper = mapper;
         }
 
-		public async Task InsertAsync(ShoppingCartItem item, bool savechanges = false)
+        public virtual async Task<ShoppingCart> AddAsync(ShoppingCart shoppingCart, bool savechanges = false)
+        {
+            await _context.ShoppingCart.AddAsync(shoppingCart);
+            if (savechanges)
+                await _context.SaveChangesAsync();
+            return shoppingCart;
+        }
+
+        public virtual async Task<ShoppingCart> UpdateAsync(ShoppingCart shoppingCart, bool savechanges = false)
+        {
+            _context.ShoppingCart.Update(shoppingCart);
+            if (savechanges)
+                await _context.SaveChangesAsync();
+            return shoppingCart;
+        }
+
+        public async Task InsertAsync(ShoppingCartItem item, bool savechanges = false)
 		{
 			await _context.ShoppingCartItem.AddAsync(item);
             if (savechanges)

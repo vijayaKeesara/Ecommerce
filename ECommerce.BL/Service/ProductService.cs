@@ -11,17 +11,33 @@ using System.Threading.Tasks;
 
 namespace ECommerce.BL.Service
 {
-	public class ProductService : EntityService<Product>, IProductService
+	public class ProductService :  IProductService
 	{
-		private readonly ShopingDatabaseContext _context;
+		private readonly IDbContext _context;
 		private readonly IMapper _mapper;
 
-		public ProductService(IMapper mapper, ShopingDatabaseContext context):base(context)
+		public ProductService(IMapper mapper, IDbContext context)
 		{
 			_context = context;
 			_mapper = mapper;
 		}
-		
+
+		public virtual async Task<Product> AddAsync(Product product, bool savechanges = false)
+		{
+			await _context.Products.AddAsync(product);
+			if (savechanges)
+				await _context.SaveChangesAsync();
+			return product;
+		}
+
+		public virtual async Task<Product> UpdateAsync(Product product, bool savechanges = false)
+		{
+			_context.Products.Update(product);
+			if (savechanges)
+				await _context.SaveChangesAsync();
+			return product;
+		}
+
 		public async Task<ProductDto> GetProductByIdAsync(int productId)
 		{
 			var p = await _context.Products.FirstOrDefaultAsync(item => item.ProductId == productId);

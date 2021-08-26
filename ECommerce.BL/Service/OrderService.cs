@@ -12,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace ECommerce.BL.Service
 {
-	public class OrderService : EntityService<Order>, IOrderService
+	public class OrderService : IOrderService
 	{
-		private readonly ShopingDatabaseContext _context;
+		private readonly IDbContext _context;
 		private readonly IMapper _mapper;
 		private readonly IProductService _productService;
 		private readonly IShoppingCartService _shoppingCartService;
 		private readonly ILogger<OrderService> _logger;
 
-		public OrderService(IMapper mapper, ILogger<OrderService> logger, ShopingDatabaseContext context,IProductService productService,
-			IShoppingCartService shoppingCartService) : base(context)
+		public OrderService(IMapper mapper, ILogger<OrderService> logger, IDbContext context,IProductService productService,
+			IShoppingCartService shoppingCartService) 
 		{
 			_context = context;
 			_productService = productService;
@@ -30,19 +30,21 @@ namespace ECommerce.BL.Service
 			_logger = logger;
 		}
 
-		//public virtual async Task InsertAsync(Order order, bool savechanges = false)
-		//{
-		//	await _context.Orders.AddAsync(order);
-		//	if (savechanges)
-		//		return	await _context.SaveChangesAsync();
-		//}
+		public virtual async Task<Order> AddAsync(Order order, bool savechanges = false)
+		{
+			await _context.Orders.AddAsync(order);
+			if (savechanges)
+				await _context.SaveChangesAsync(savechanges);
+			return order;
+		}
 
-		//public virtual async Task UpdateAsync(Order order, bool savechanges = false)
-		//{
-		//	_context.Orders.Update(order);
-		//	if (savechanges)
-		//		return await _context.SaveChangesAsync();
-		//}
+		public virtual async Task<Order> UpdateAsync(Order order, bool savechanges = false)
+		{
+			_context.Orders.Update(order);
+			if (savechanges)
+				 await _context.SaveChangesAsync(savechanges);
+			return order;
+		}
 
 		public virtual async Task<Order> GetOrderByIdAsync(int orderId)
 		{
@@ -77,7 +79,7 @@ namespace ECommerce.BL.Service
 				order.CustomerId = shoppingitem.CustomerId;
 				order.OrderStatus = OrderStatus.OrderCreated;
 				order.OrderDate = System.DateTime.Now;
-				await base.AddAsync(order,false);
+				await AddAsync(order,false);
 				order.OrderNo = DateTime.Now.ToString("ddmmmyyyyHHmmss") ;
 				foreach (var item in cartItems)
 				{
