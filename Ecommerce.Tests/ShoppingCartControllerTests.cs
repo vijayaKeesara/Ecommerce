@@ -58,9 +58,9 @@ namespace Ecommerce.Tests
 		public async void CheckOut_ReturnsSucess()
 		{
 			var warnings = new List<string>();
-			shoppingCartService.Setup(x => x.AddToCartAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns(System.Threading.Tasks.Task.FromResult<IEnumerable<string>>(warnings));
+			shoppingCartService.Setup(x => x.AddToCartAsync(It.IsAny<ShoppingCartItemDto>())).Returns(System.Threading.Tasks.Task.FromResult<IEnumerable<string>>(warnings));
 			// Act
-			var result = await _controller.CheckoutOrderAsync(1,1,1,1);
+			var result = await _controller.CheckoutOrderAsync(new ShoppingCartItemDto { CartId = 1,CustomerId=1,ProductId=1,Quantity=1});
 
 			// Assert
 			Xunit.Assert.IsType<Microsoft.AspNetCore.Mvc.OkObjectResult>(result.Result);

@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.MiddleWare
 {
-	public class ExceptionLoggingMiddleware
+	public static class ExceptionLoggingMiddleware
 	{
-		public void ConfigureExceptionHandler(IApplicationBuilder app, ILoggerManager logger)
+		public static void ConfigureExceptionHandler(this IApplicationBuilder app, ILoggerManager logger)
 		{
 			app.UseExceptionHandler(appError =>
 			{

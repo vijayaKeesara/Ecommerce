@@ -12,9 +12,7 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class ProductController : ControllerBase
+	public class ProductController : BaseController
 	{
 		private readonly IProductService _productService;
 		private readonly ILoggerManager logger;
@@ -96,6 +94,8 @@ namespace Ecommerce.Controllers
 		{
 			try
 			{
+				if (!ModelState.IsValid)
+					return BadRequest(ModelState);
 				Product product = _mapper.Map<ProductDto, Product>(productDto);
 				var result = await _productService.AddAsync(product, true);
 				var temp = _mapper.Map<ProductDto>(result);

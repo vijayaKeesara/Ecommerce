@@ -3,6 +3,7 @@ using Ecommerce.DA.Domain.Models;
 using ECommerce.BL.Dto;
 using ECommerce.BL.Service.Interface;
 using LoggerService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,9 +13,7 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class CustomerController : ControllerBase
+	public class CustomerController : BaseController
 	{
 		private readonly ICustomerService _customerService;
 		private readonly ILoggerManager logger;

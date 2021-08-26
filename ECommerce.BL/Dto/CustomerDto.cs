@@ -15,6 +15,7 @@ namespace ECommerce.BL.Dto
 		public string LastName { get; set; }
 
 		[StringLength(150)]
+		[Required]
 		public string Email { get; set; }
 	}
 }

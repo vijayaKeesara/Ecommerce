@@ -27,28 +27,35 @@ namespace Ecommerce.MiddleWare
 
 			var url = UriHelper.GetDisplayUrl(context.Request);
 
-			_logger.LogInfo("API endpoint called - " + url.Substring(url.IndexOf("/api")));
-			//_logger.LogInfo("API endpoint called - " + context.Request.Path);
-			//Copy a pointer to the original response body stream
-			var originalBodyStream = context.Response.Body;
-
-
-			//Create a new memory stream...
-			using (var responseBody = new MemoryStream())
+			if (url.IndexOf("/api") <= 0 && url.IndexOf("/Swagger") > 0)
 			{
-				//...and use that for the temporary response body
-				context.Response.Body = responseBody;
-
-				//Continue down the Middleware pipeline, eventually returning to this class
 				await _next(context);
+			}
+			else
+			{
+				_logger.LogInfo("API endpoint called - " + url.Substring(url.IndexOf("/api")));
+				//_logger.LogInfo("API endpoint called - " + context.Request.Path);
+				//Copy a pointer to the original response body stream
+				var originalBodyStream = context.Response.Body;
 
-				//Format the response from the server
-				var response = await FormatResponse(context.Response);
 
-				//TODO: Save log to chosen datastore
+				//Create a new memory stream...
+				using (var responseBody = new MemoryStream())
+				{
+					//...and use that for the temporary response body
+					context.Response.Body = responseBody;
 
-				//Copy the contents of the new memory stream (which contains the response) to the original stream, which is then returned to the client.
-				await responseBody.CopyToAsync(originalBodyStream);
+					//Continue down the Middleware pipeline, eventually returning to this class
+					await _next(context);
+
+					//Format the response from the server
+					var response = await FormatResponse(context.Response);
+
+					//TODO: Save log to chosen datastore
+
+					//Copy the contents of the new memory stream (which contains the response) to the original stream, which is then returned to the client.
+					await responseBody.CopyToAsync(originalBodyStream);
+				}
 			}
 		}
 

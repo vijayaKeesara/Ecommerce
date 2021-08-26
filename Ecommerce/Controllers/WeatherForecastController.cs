@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LoggerService;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,9 @@ namespace Ecommerce.Controllers
 			"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 		};
 
-		private readonly ILogger _logger;
+		private readonly ILoggerManager _logger;
 
-		public WeatherForecastController(ILogger logger)
+		public WeatherForecastController(ILoggerManager logger)
 		{
 			_logger = logger;
 		}

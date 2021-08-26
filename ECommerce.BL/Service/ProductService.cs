@@ -52,7 +52,7 @@ namespace ECommerce.BL.Service
 			else
 				products = await _context.Products.ToListAsync();
 
-			return _mapper.Map<List<ProductDto>>(products);
+			return _mapper.Map<IEnumerable<ProductDto>>(products.ToList());
 		}
 
 		public async Task<IEnumerable<ProductDto>> SearchProductsAsync(string name, string category, bool includeOutOfStock = false)

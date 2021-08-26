@@ -66,16 +66,16 @@ namespace ECommerce.BL.Service
         {
             return _context.ShoppingCart.FirstOrDefault(item => item.CartId == cartId && item.CustomerId == customerId);
         }  
-        public virtual async Task<IEnumerable<string>> AddToCartAsync(int customerId, int productId, int cartId, int quantity = 1)
+        public virtual async Task<IEnumerable<string>> AddToCartAsync(ShoppingCartItemDto shoppingCartItemDto)
         {
-            var (warnings, newquantity, shoppingcart, cartItem) = await ValidateItem(customerId, productId, cartId,quantity); ;
+            var (warnings, newquantity, shoppingcart, cartItem) = await ValidateItem(shoppingCartItemDto); ;
             if (warnings != null && warnings.Count() > 0)
                 return warnings;
             try
             {
                 using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    await CreateOrUpdateShoppingCart(cartId, customerId, productId, newquantity, quantity, shoppingcart, cartItem);
+                    await CreateOrUpdateShoppingCart(shoppingCartItemDto, newquantity, shoppingcart, cartItem);
                     var temp = await _context.SaveChangesAsync(true);
                     scope.Complete();
                 }
@@ -88,12 +88,13 @@ namespace ECommerce.BL.Service
             return new List<string> { "Added to cart successfully." };
         }
 
-		private async Task CreateOrUpdateShoppingCart(int cartId, int customerId, int productId, int newquantity, int quantity,ShoppingCart oldshoppingCart,ShoppingCartItem cartItem)
+		private async Task CreateOrUpdateShoppingCart(ShoppingCartItemDto shoppingCartItemDto, int newquantity, ShoppingCart oldshoppingCart,ShoppingCartItem cartItem)
 		{
+            int cartId = shoppingCartItemDto.CartId;
             var newcart = new ShoppingCart
             {
-                CartId = cartId,
-                CustomerId = customerId
+                CartId = shoppingCartItemDto.CartId,
+                CustomerId = shoppingCartItemDto.CustomerId
             };
             if (oldshoppingCart != null)
             {
@@ -103,9 +104,9 @@ namespace ECommerce.BL.Service
             var shoppingCartItem = new ShoppingCartItem
             {
                 CartId = cartId,
-                ProductId = productId,
+                ProductId = shoppingCartItemDto.ProductId,
                 Quantity = newquantity,
-                CustomerId = customerId,
+                CustomerId = shoppingCartItemDto.CustomerId,
                 ShoppingCart = newcart
             };
 
@@ -130,42 +131,49 @@ namespace ECommerce.BL.Service
             }
         }
 
-        public async Task<(IEnumerable<string>,int, ShoppingCart, ShoppingCartItem)> ValidateItem(int customerId, int productId, int cartId, int quantity)
+        public async Task<(IEnumerable<string>,int, ShoppingCart, ShoppingCartItem)> ValidateItem(ShoppingCartItemDto shoppingCartItemDto)
 		{
             var warnings = new List<string>();
-            var customer = await _customerService.GetCustomerByIdAsync(customerId);
+            var customer = await _customerService.GetCustomerByIdAsync(shoppingCartItemDto.CustomerId);
             if (customer == null)
             {
                 warnings.Add("Invalid customer");
                 return (warnings,0,null,null);
             }
 
-            var product = await _productService.GetProductByIdAsync(productId);
+            var product = await _productService.GetProductByIdAsync(shoppingCartItemDto.ProductId);
             if (product == null)
             {
                 warnings.Add("Invalid product");
                 return (warnings,0,null,null);
             }
 
-            var shoppingCart = await GetShoppingCartByIdAsync(customerId, cartId);
-
-            if (cartId > 0 && shoppingCart == null)
-            {
-                warnings.Add("Invalid cart");
-                return (warnings, 0, null, null);
-            }
-
-            var newquantity = quantity;
+            var newquantity = shoppingCartItemDto.Quantity;
             ShoppingCartItem cartItem = null;
-            if (cartId > 0 && shoppingCart != null)
-            {
-                cartItem = _context.ShoppingCartItem.AsNoTracking().FirstOrDefault(item => item.CartId == cartId && item.CustomerId == customerId && item.ProductId == productId);
+            ShoppingCart shoppingCart = null;
 
-                if (cartItem != null)
+            //check if the cart exists
+            if (shoppingCartItemDto.CartId > 0)
+            {
+                 shoppingCart = await GetShoppingCartByIdAsync(shoppingCartItemDto.CustomerId, shoppingCartItemDto.CartId);
+
+                if (shoppingCart == null)
                 {
-                    newquantity += cartItem.Quantity;
+                    warnings.Add("Invalid cart");
+                    return (warnings, 0, null, null);
+                }
+                else 
+                {
+                    cartItem = _context.ShoppingCartItem.AsNoTracking().FirstOrDefault(item => item.CartId == shoppingCartItemDto.CartId 
+                    && item.CustomerId == shoppingCartItemDto.CustomerId && item.ProductId == shoppingCartItemDto.ProductId);
+
+                    if (cartItem != null)
+                    {
+                        newquantity += cartItem.Quantity;
+                    }
                 }
             }
+           
             //Check product availability
             if (product.UnitsInStock ==0 || product.UnitsInStock < newquantity)
             {

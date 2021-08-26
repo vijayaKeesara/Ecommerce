@@ -47,15 +47,12 @@ namespace Ecommerce
 			services.AddControllers().AddNewtonsoftJson(options =>
 				options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-			services.AddSwaggerGen(c =>
-			{
-				c.SwaggerDoc("V1", new OpenApiInfo { Title = "My API", Version = "V1" });
-			});
-
+			services.ConfigSwagger(Configuration);
+			services.ConfigureAuthentication(Configuration);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)
 		{
 			if (env.IsDevelopment())
 			{
@@ -65,6 +62,9 @@ namespace Ecommerce
 			//ExecuteMigrations(app,env);
 
 			app.UseHttpsRedirection();
+
+			app.UseMiddleware<RequestResponseLoggingMiddleware>();
+			app.ConfigureExceptionHandler(logger);
 
 			// Enable middleware to serve generated Swagger as a JSON endpoint.
 			app.UseSwagger();
@@ -78,6 +78,15 @@ namespace Ecommerce
 
 			app.UseRouting();
 
+			// global cors policy
+			app.UseCors(x => x
+				.AllowAnyOrigin()
+				.AllowAnyMethod()
+				.AllowAnyHeader());
+
+			app.UseMiddleware<JwtMiddleware>();
+
+			app.UseAuthentication();
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>

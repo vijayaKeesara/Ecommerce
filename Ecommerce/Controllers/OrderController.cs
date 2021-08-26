@@ -11,9 +11,7 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class OrderController : ControllerBase
+	public class OrderController : BaseController
 	{
 		private readonly IOrderService _orderService;
 		private readonly ILoggerManager logger;

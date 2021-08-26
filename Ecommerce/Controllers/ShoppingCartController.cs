@@ -10,9 +10,7 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class ShoppingCartController : ControllerBase
+	public class ShoppingCartController : BaseController
 	{
 		private readonly IShoppingCartService _shoppingCartService;		
 		private readonly ILoggerManager logger;
@@ -49,15 +47,14 @@ namespace Ecommerce.Controllers
 		[HttpPost]
 		[Produces("application/json")]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<ActionResult<List<string>>> CheckoutOrderAsync(int storeId, int customerId, int producId, int quantity)
+		public async Task<ActionResult<List<string>>> CheckoutOrderAsync(ShoppingCartItemDto shoppingCartItemDto)
 		{
-			if (producId <= 0 || customerId <=0)
-				return BadRequest("The input couldnot be validated");
-			if (quantity <= 0)
-				return BadRequest("Please enter valid quantity");
+			
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 			try
 			{
-				var result = await _shoppingCartService.AddToCartAsync(customerId, producId, storeId, quantity);
+				var result = await _shoppingCartService.AddToCartAsync(shoppingCartItemDto);
 				
 				return Ok(result);
 			}
