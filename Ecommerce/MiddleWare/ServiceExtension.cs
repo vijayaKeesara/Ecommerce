@@ -35,7 +35,7 @@ namespace Ecommerce.MiddleWare
 		public static void ConfigureService(this IServiceCollection services)
 		{
 			services.AddSingleton<ILoggerManager, LoggerManager>();
-			services.AddScoped<IDbContext, ShopingDatabaseContext>();
+			services.AddTransient<IDbContext, ShopingDatabaseContext>();
 			services.AddScoped<IProductService, ProductService>();
 			services.AddScoped<IOrderService, OrderService>();
 			services.AddScoped<IShoppingCartService, ShoppingCartService>();
@@ -46,7 +46,7 @@ namespace Ecommerce.MiddleWare
 		{
 			var connectionString = config["DefaultConnection:connectionString"];
 			services.AddEntityFrameworkSqlServer().AddDbContext<ShopingDatabaseContext>(options =>
-				options.UseSqlServer(connectionString));
+				options.UseSqlServer(connectionString), ServiceLifetime.Transient);
 		}
 
 		public static IServiceCollection ConfigSwagger(this IServiceCollection services,IConfiguration configuration)

@@ -62,11 +62,11 @@ namespace ECommerce.BL.Service
                 await _context.SaveChangesAsync(savechanges);
 		}
 
-		public virtual async Task<ShoppingCart> GetShoppingCartByIdAsync(int customerId, int cartId)
+		public async Task<ShoppingCart> GetShoppingCartByIdAsync(int customerId, int cartId)
         {
             return _context.ShoppingCart.FirstOrDefault(item => item.CartId == cartId && item.CustomerId == customerId);
         }  
-        public virtual async Task<IEnumerable<string>> AddToCartAsync(ShoppingCartItemDto shoppingCartItemDto)
+        public async Task<IEnumerable<string>> AddToCartAsync(ShoppingCartItemDto shoppingCartItemDto)
         {
             var (warnings, newquantity, shoppingcart, cartItem) = await ValidateItem(shoppingCartItemDto); ;
             if (warnings != null && warnings.Count() > 0)
@@ -183,7 +183,7 @@ namespace ECommerce.BL.Service
             return (warnings,newquantity, shoppingCart,cartItem);
         }
 
-        public virtual async Task DeleteShoppingCartAsync(int cartId, bool savechanges)
+        public async Task DeleteShoppingCartAsync(int cartId, bool savechanges)
         {            
             var cartitem = await _context.ShoppingCart.FirstOrDefaultAsync(i => i.CartId == cartId);
 
@@ -201,7 +201,7 @@ namespace ECommerce.BL.Service
             }
         }
 
-        public virtual async Task DeleteShoppingCartItemAsync(ShoppingCartItemDto shoppingCartItem, bool savechanges)
+        public async Task DeleteShoppingCartItemAsync(ShoppingCartItemDto shoppingCartItem, bool savechanges)
         {
             if (shoppingCartItem == null || shoppingCartItem.CartId <=0 || shoppingCartItem.ProductId <=0 || shoppingCartItem.CustomerId <=0)
                 throw new ArgumentNullException(nameof(shoppingCartItem));
@@ -217,7 +217,7 @@ namespace ECommerce.BL.Service
             }
         }
 
-        public virtual async Task<IEnumerable<ShoppingCartItemDto>> GetShoppingCartItemsAsync(int? customerId, int? storeId = null, int? productId = null)
+        public async Task<IEnumerable<ShoppingCartItemDto>> GetShoppingCartItemsAsync(int? customerId, int? storeId = null, int? productId = null)
         {
             IQueryable<ShoppingCartItem> items = _context.ShoppingCartItem.Include(c=>c.Product);
 
@@ -244,7 +244,7 @@ namespace ECommerce.BL.Service
         }
 
 
-        public virtual async Task<(decimal,decimal)> GetSubTotalAsync(ShoppingCartItem shoppingCartItem)
+        public async Task<(decimal,decimal)> GetSubTotalAsync(ShoppingCartItem shoppingCartItem)
         {
             if (shoppingCartItem == null)
                 throw new ArgumentNullException(nameof(shoppingCartItem));

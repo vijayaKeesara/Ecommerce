@@ -46,17 +46,17 @@ namespace ECommerce.BL.Service
 			return order;
 		}
 
-		public virtual async Task<Order> GetOrderByIdAsync(int orderId)
+		public async Task<Order> GetOrderByIdAsync(int orderId)
 		{
 			return await _context.Orders.Include(c=>c.OrderProducts).FirstOrDefaultAsync(item => item.OrderId == orderId) ;
 		}
 
-		public virtual async Task<Order> GetOrderByCustomOrderNumberAsync(string orderNo)
+		public async Task<Order> GetOrderByCustomOrderNumberAsync(string orderNo)
 		{
 			return await _context.Orders.Include(c=>c.OrderProducts).FirstOrDefaultAsync(item => item.OrderNo == orderNo);
 		}
 
-		public virtual async Task<List<string>> ChekOutOrderAsync(int customerId,int storeId)
+		public async Task<List<string>> ChekOutOrderAsync(int customerId,int storeId)
 		{
 			var cartItems = await _shoppingCartService.GetShoppingCartItemsAsync(customerId, storeId);
 			var warnings = new List<string>();

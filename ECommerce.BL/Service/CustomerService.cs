@@ -2,6 +2,7 @@
 using Ecommerce.DA.Domain.Models;
 using ECommerce.BL.Service.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,9 +13,11 @@ namespace ECommerce.BL.Service
 	public class CustomerService : EntityService<Customer>, ICustomerService
 	{
 		private readonly ShopingDatabaseContext _context;
-		public CustomerService(ShopingDatabaseContext context) : base(context)
+		private readonly IServiceScopeFactory _scopeFactory;
+		public CustomerService(ShopingDatabaseContext context, IServiceScopeFactory scopeFactory) : base(context)
 		{
 			_context = context;
+			_scopeFactory = scopeFactory;
 		}
 
 		//public virtual async Task<Customer> AddAsync(Customer customer, bool savechanges = false)
@@ -32,9 +35,13 @@ namespace ECommerce.BL.Service
 		//		await _context.SaveChangesAsync();
 		//	return customer;
 		//}
-		public virtual async Task<Customer> GetCustomerByIdAsync(int customerId)
+		public async Task<Customer> GetCustomerByIdAsync(int customerId)
 		{
-			return await _context.Customers.FirstOrDefaultAsync(item => item.CustomerId == customerId);
+			using (var scope = _scopeFactory.CreateScope())
+			{
+				var db = scope.ServiceProvider.GetRequiredService<ShopingDatabaseContext>();
+				return await db.Customers.FirstOrDefaultAsync(item => item.CustomerId == customerId);
+			}
 		}
 	}
 }
